@@ -1,0 +1,65 @@
+Steps for Demo
+
+1) mkdir JugDemo
+2) cd JugDemo
+3) mkdir -p src/HelloWorld/com/jug/demo/main
+4) mkdir mods
+5) mkdir target
+6) vi src/HelloWorld/module-info.java
+	module HelloWorld
+	{
+		exports com.jug.demo.main;
+	}
+7) vi src/Helloworld/com/jug/demo/main/HelloWorld.java
+	package com.jug.demo.main;
+	
+	public class HelloWorld
+	{
+		public static void main( String[] args )
+		{
+			System.out.println( "Hello World!" );
+		}
+	}
+8) javac -d target --module-source-path src $(find src/HelloWorld -name '*.java')
+9) jar -c -f mods/HelloWorld.jar --main-class com.jug.demo.main.HelloWorld -C target/HelloWorld .
+10) java -p mods --module HelloWorld
+
+1) mkdir -p src/HelloHelper/com/jug/demo/helper
+2) vi src/HelloHelper/module-info.java
+	module HelloHelper
+	{
+		exports com.jug.demo.helper
+	}
+3) vi src/HelloHelper/com/jug/demo/helper/HelloHelper.java
+	package com.jug.demo.helper;
+	
+	public class HelloHelper
+	{
+		public static String getName()
+		{
+			return "World from a module!";
+		}
+	}
+4) javac -d target --module-source-path src $(find src/HelloHelper -name '*.java')
+5) jar -c -f mods/HelloHelper.jar -C target/HelloHelper .
+6) vi src/HelloWorld/module-info.java
+	module HelloWorld
+	{
+		requires HelloHelper;
+		exports com.jug.demo.main;
+	}
+7) vi src/HelloWorld/com/jug/demo/main/HelloWorld.java
+	package com/jug/demo/main;
+
+	import com.jug.demo.helper.HelloHelper;
+	
+	public class HelloWorld
+	{
+		public static void main( String[] args )
+		{
+			System.out.println( "Hello " + HelloHelper.getName() );
+		}
+	}
+8) javac -d target -p mods --module-source-path src $(find src/HelloWorld -name '*.java')
+9) jar -c -f mods/HelloWorld.jar -p mods --main-class com.jug.demo.main.HelloWorld -C target/HelloWorld .
+10) java -p mods --module HelloWorld
